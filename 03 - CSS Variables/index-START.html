@@ -22,6 +22,12 @@
 
   <style>
 
+    :root {
+      --base: #ffc600;
+      --spacing: 10px;
+      --blur: 10px;
+    }
+
     /*
       misc styles, nothing to do with CSS variables
     */
@@ -35,6 +41,12 @@
       font-size: 50px;
     }
 
+    img {
+      padding: var(--spacing);
+      background-color: var(--base);
+      filter: blur(var(--blur));
+    }
+
     .controls {
       margin-bottom: 50px;
     }
@@ -42,9 +54,21 @@
     input {
       width:100px;
     }
+
+
   </style>
 
   <script>
+    const img = document.getElementsByTagName("img")[0];
+    const inputs = [].slice.call(document.getElementsByTagName("input"));
+
+    inputs.forEach(input => input.addEventListener('change',changeStyle));
+    inputs.forEach(input => input.addEventListener('mousemove',changeStyle));
+
+    function changeStyle(e) {
+      const val = (this.name === 'base') ? this.value : this.value + 'px';
+      img.style.setProperty(`--${this.name}`, val);
+    }
   </script>
 
 </body>
