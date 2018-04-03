@@ -58,7 +58,23 @@
   <audio data-key="76" src="sounds/tink.wav"></audio>
 
 <script>
-
+  /*
+   add event listener for keyboard press
+   set element
+   collect data-key of element pressed
+   play audio w matching data-key
+   add 'playing' class to element
+   remove 'playing' class from element
+  */
+  window.addEventListener('keydown', function (e) {
+    const key = document.querySelectorAll(`[data-key ='${e.keyCode}']`)
+    const audio = key[1];
+    const button = key[0];
+    audio.currentTime = 0;
+    audio.play();
+    button.classList.add("playing");
+    setTimeout( () => button.classList.remove("playing"),100);
+  });
 </script>
 
 
