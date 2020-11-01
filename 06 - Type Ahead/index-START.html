@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Type Ahead 👀</title>
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
   <form class="search-form">
@@ -14,9 +16,53 @@
       <li>or a state</li>
     </ul>
   </form>
-<script>
-const endpoint = 'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
+  <script>
+    const endpoint = 'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
+    let cityStates;
 
-</script>
-  </body>
+    function generateCityStateStrings(res) {
+      return JSON.parse(res).map(place => {
+        return {
+          cityState: place.city + ', ' + place.state,
+          pop: place.population
+        };
+      })
+    }
+
+    function reqListener() {
+      cityStates = generateCityStateStrings(this.responseText);
+    }
+
+    const oReq = new XMLHttpRequest();
+    oReq.addEventListener("load", reqListener);
+    oReq.open("GET", endpoint);
+    oReq.send();
+
+    const search = document.querySelector('.search');
+    const suggestions = document.querySelector('.suggestions');
+
+    function handleTyping(e) {
+      const matches = cityStates.filter(v => v.cityState.includes(this.value));
+
+      while (suggestions.firstChild) {
+        suggestions.firstChild.remove();
+      }
+
+      matches.forEach(match => {
+        const regex = new RegExp(this.value, 'gi');
+        const matchedName = match.cityState.replace(regex, `<span class="hl">${this.value}</span>`);
+
+        console
+        
+        const newChild = document.createElement('li');
+        newChild.innerHTML = `<span class="name">${matchedName}</span><span class="population">${parseInt(match.pop).toLocaleString()}</span>`
+
+        suggestions.appendChild(newChild)
+      })
+    }
+
+    search.addEventListener('input', handleTyping)
+  </script>
+</body>
+
 </html>
