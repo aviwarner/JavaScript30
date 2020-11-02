@@ -7,6 +7,62 @@
 <body>
 <canvas id="draw" width="800" height="800"></canvas>
 <script>
+  const BASE_SIZE = 5;
+  const MAX_SIZE = 100;
+  let shrinkingSize = false;
+
+  const canvas = document.querySelector('#draw');
+  const ctx = canvas.getContext("2d");
+  let hue = 0;
+  let lastX = 0;
+  let lastY = 0;
+  ctx.lineJoin = 'round';
+  ctx.lineCap = 'round';
+
+  let drawing = false;
+
+  function handleShouldDraw(e, bool) {
+    [lastX, lastY] = [e.clientX, e.clientY];
+    drawing = bool;
+  }
+
+  function handleDrawing(e) {
+    if (!drawing) {
+      return;
+    }
+
+    ctx.beginPath();
+    ctx.strokeStyle = `hsl(${hue}, 100%, 50%)`;
+    ctx.moveTo(lastX, lastY);
+    ctx.lineTo(e.clientX, e.clientY);
+    ctx.stroke();
+
+    [lastX, lastY] = [e.clientX, e.clientY]
+
+    hue++;
+    if (hue === 360) {
+      hue = 0;
+    }
+
+    if (!shrinkingSize) {
+      if (ctx.lineWidth === MAX_SIZE) {
+        ctx.lineWidth--;
+        shrinkingSize = true;
+      } else {
+        ctx.lineWidth++;
+      }
+    } else {
+      if (ctx.lineWidth === BASE_SIZE) {
+        ctx.lineWidth++;
+        shrinkingSize = false;
+      }
+      ctx.lineWidth--;
+    }
+  }
+
+  canvas.addEventListener('mousemove', handleDrawing);
+  canvas.addEventListener('mousedown', (e) => handleShouldDraw(e, true));
+  canvas.addEventListener('mouseup', (e) => handleShouldDraw(e, false));
 </script>
 
 <style>
